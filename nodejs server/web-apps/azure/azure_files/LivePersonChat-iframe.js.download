@@ -1,0 +1,380 @@
+'use strict';
+
+((global) => {
+    const chatButtonSelector = 'live-engage-btn',
+        renderedChatButtonSelector = 'rendered-livengage-chat-btn',
+        iFrameWindowIDSelector = 'iFrame',
+        iFrameDomainUrlAttrName = 'data-domainUrl',
+        flyoutContainerIdSelector = 'lp-iframe-container',
+        ariaHiddenAttrName = 'aria-hidden',
+        proactiveChatNowSelector = '.lp-chatnow',
+        proactiveNoThanksSelector = '.lp-nothanks',
+        proactiveChatContainer = '#lp-proactive-invite',
+        chatButtonNode = document.getElementById(chatButtonSelector),
+        renderedChatButtonNode = document.getElementById(renderedChatButtonSelector),
+        proactiveChatButtonNode = document.querySelector(proactiveChatNowSelector),
+        proactiveNoThanksNode = document.querySelector(proactiveNoThanksSelector);
+
+    let iFrameInDom,
+        targetDomain,
+        isInitialized = false, // eslint-disable-line
+        isProactiveChat = false, // eslint-disable-line
+        hasFired1DSCloseEvent = false, // This is temporary to intentionally only fire once.
+        hasFired1DSReadyEvent = false, // This is temporary to intentionally only fire once.
+        flyoutContainer;
+
+    if (chatButtonNode) {
+        chatButtonNode.addEventListener('click', () => {
+            openChatWindow();
+        });
+    }
+
+    if (renderedChatButtonNode) {
+        renderedChatButtonNode.addEventListener('click', () => {
+            openChatWindow();
+        });
+    }
+
+    if (proactiveChatButtonNode) {
+        proactiveChatButtonNode.addEventListener('click', () => {
+            initializeIframe();
+            postParentSizeMessage();
+            postTopicNameMessage();
+            postProactiveInviteMessage('accepted');
+            hideProactiveChatInvite();
+        });
+    }
+
+    if (proactiveNoThanksNode) {
+        proactiveNoThanksNode.addEventListener('click', () => {
+            postProactiveInviteMessage('declined');
+            hideProactiveChatInvite();
+        });
+    }
+
+    window.addEventListener('message', receiveMessage, false);
+    window.addEventListener('resize', resizeHandler, false);
+
+    /**
+     * Get the target domain
+     * @returns {string} target domain
+     */
+    function getTargetDomain() {
+        if (!targetDomain) {
+            if (!iFrameInDom) {
+                iFrameInDom = document.getElementById(iFrameWindowIDSelector);
+            }
+
+            targetDomain = iFrameInDom.getAttribute(iFrameDomainUrlAttrName);
+        }
+
+        return targetDomain;
+    }
+
+
+    /** Gets if the WCP Consent library is available for use and checks is consent is required */
+    function getIsWcpConsentRequired() {
+        return typeof WcpConsent === 'function' && typeof WcpConsent.siteConsent === 'object' && WcpConsent.siteConsent.isConsentRequired; // eslint-disable-line no-undef
+    }
+
+    function initializeIframe() {
+        if (!isInitialized) {
+            postMessage({ action: 'initializeLP' });
+            isInitialized = true;
+        }
+    }
+
+    /**
+     * Post a message to the parent iframe
+     * @param {Object} message data submitted with the posted message
+     */
+    function postMessage(message) {
+        targetDomain = getTargetDomain();
+        iFrameInDom.contentWindow.postMessage(message, targetDomain);
+    }
+
+    /**
+     * Fire a custom page action event in 1DS analytics
+     * @param {number} behavior Numeric identifier that represents a behavior
+     * @param {string} id Identifier within the DOM
+     */
+    function fireOneDs(behavior, id) {
+        let content = {};
+
+        if (global.oneDsAnalytics && global.oneDsAnalytics.capturePageAction) {
+            content.chtid = 'azure chat 1';
+            content.chtnm = isProactiveChat ? 'live person proactive chat' : 'live person chat';
+            content.aN = 'chat';
+
+            if (id) {
+                content.id = id;
+            }
+
+            global.oneDsAnalytics.capturePageAction(null, {
+                behavior: behavior,
+                content: content
+            });
+        }
+    }
+
+    /**
+     * LiveEngage button click
+     */
+    function openChatWindow() {
+        initializeIframe();
+        if (!flyoutContainer) {
+            flyoutContainer = document.getElementById(flyoutContainerIdSelector);
+        }
+
+        flyoutContainer.setAttribute(ariaHiddenAttrName, 'false');
+        flyoutContainer.style.display = 'block';
+
+        postParentSizeMessage();
+        postTopicNameMessage();
+
+        postMessage({ action: 'open' });
+    }
+
+    /**
+     * Unhide the chat button and log timing
+     */
+    function enableLiveChatButtonOnLoad() {
+        if (!getIsWcpConsentRequired()) {
+            initializeIframe();
+        }
+        chatButtonNode.classList.remove('hide');
+        if (renderedChatButtonNode) {
+            renderedChatButtonNode.classList.remove('hide');
+        }
+    }
+
+    /**
+     * Hide the chat button and log timing
+     */
+    function hideLiveChatButton() {
+        if (chatButtonNode && !chatButtonNode.classList.contains('hide')) {
+            chatButtonNode.classList.add('hide');
+        }
+
+        if (renderedChatButtonNode && renderedChatButtonNode.classList.contains('hide')) {
+            renderedChatButtonNode.classList.add('hide');
+        }
+    }
+
+    /**
+     * Window resize handler
+     */
+    function resizeHandler() {
+        postParentSizeMessage();
+    }
+
+    /**
+     * Post the 'lppagename' and 'lpcurl' messages to the parent iframe
+     */
+    function postLpPageNameAndLpcUrl() {
+        const currentUrl = iFrameInDom.getAttribute('data-lpcurl');
+
+        // confirmed with Live Person that both the lppagename and lpcurl should be set to the current URL - 6/13/22
+        postMessage({ lppagename: currentUrl });
+        postMessage({ lpcurl: currentUrl });
+    }
+
+    /**
+     * Post the 'invite' message to the parent iframe
+     */
+    function postProactiveInviteMessage(messageName) {
+        postMessage({ invite: messageName });
+    }
+
+    /**
+     * Post the 'parentsize' message to the parent iframe
+     */
+    function postParentSizeMessage() {
+        // This is needed mainly for mobile browsers so LP can adjust its size based on the parent window dimensions.
+        postMessage({
+            action: 'parentsize',
+            Width: window.innerWidth,
+            Height: window.innerHeight,
+            PixelRatio: 1
+        });
+    }
+
+    /**
+     * Post the 'topic' message to the parent iframe
+     */
+    function postTopicNameMessage() {
+        postMessage({ action: 'Topic', Topic: 'Azure' });
+    }
+
+    /**
+     * Post the 'parentsize' message to the parent iframe on mobile
+     */
+    function sendParentSizeMessageInMobileCanvasOnly() {
+        if (window.matchMedia('max-width: 48em').matches) {
+            postParentSizeMessage();
+        }
+    }
+
+    /**
+     * Parse messages sent by the parent iframe
+     * @param {Event} event custom event sent by the parent iframe
+     */
+    function receiveMessage(event) {
+        var src;
+
+        // We need to make sure that the message we receive is from LivePerson.
+        if (!event.origin.includes('liveperson')) {
+            return;
+        }
+
+        targetDomain = getTargetDomain();
+
+        if (event.origin === targetDomain && event && event.data) {
+            src = event.data.action
+                || event.data.window
+                || event.data.engagement
+                || event.data.button
+                || event.data.invite;
+
+            if (!flyoutContainer) {
+                flyoutContainer = document.getElementById(flyoutContainerIdSelector);
+            }
+
+            if (event.data.analyticsChatWindowClick) {
+                switch (event.data.analyticsChatWindowClick) {
+                    case 'Start':
+                        fireOneDs(180, 'initiate-chat');
+                        break;
+                    default:
+                        fireOneDs(0, event.data.analyticsChatWindowClick);
+                        break;
+                }
+            }
+
+            // when clicking Yes to end the chat
+            if (event.data.analyticsUIClick && event.data.analyticsUIClick === 'Yes') {
+                fireOneDs(181, 'end-chat');
+            }
+
+            // when the chat options are displayed
+            if (event.data.analyticsUIRender && event.data.analyticsUIRender === 'options rendered') {
+                fireOneDs(0, 'display-options');
+            }
+
+            console.log('LP message received: ' + src);
+
+            switch (src) {
+                case 'maximized':
+                case 'loading':
+                    hideLiveChatButton();
+                    updateFlyoutContainerStyle(flyoutContainer, event.data);
+                    break;
+
+                case 'minimized':
+                    enableLiveChatButtonOnLoad();
+                    updateFlyoutContainerStyle(flyoutContainer, event.data);
+                    break;
+
+                case 'opened':
+                    hasFired1DSCloseEvent = false;
+                    showChatWindow();
+                    break;
+
+                case 'displayed':
+                    showProactiveChatInvite();
+                    break;
+
+                case 'buttonReady':
+                    if (!hasFired1DSReadyEvent) {
+                        fireOneDs(14, 'show-chat');
+                        hasFired1DSReadyEvent = true;
+                    }
+                    enableLiveChatButtonOnLoad();
+                    postLpPageNameAndLpcUrl();
+                    break;
+
+                case 'buttonNotReady':
+                    hideLiveChatButton();
+                    break;
+
+                case 'closed':
+                    document.getElementById(flyoutContainerIdSelector).style.display = 'none';
+                    closeSandBoxFlyout();
+                    enableLiveChatButtonOnLoad();
+                    if (!hasFired1DSCloseEvent) {
+                        fireOneDs(0, 'close-chat');
+                        hasFired1DSCloseEvent = true;
+                    }
+                    break;
+
+                case 'failed':
+                    console.log(event.data.msg);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Show the proactive chat window
+     */
+    function showProactiveChatInvite() {
+        let proactiveChatInvite = document.querySelector(proactiveChatContainer);
+        isProactiveChat = true;
+        if (proactiveChatInvite) {
+            proactiveChatInvite.classList.remove('hide');
+            fireOneDs(14, 'show-chat');
+        }
+    }
+
+    /**
+     * Hide the proactive chat window
+     */
+    function hideProactiveChatInvite() {
+        let proactiveChatInvite = document.querySelector(proactiveChatContainer);
+        if (proactiveChatInvite) {
+            proactiveChatInvite.classList.add('hide');
+        }
+    }
+
+    /**
+     * Show the default chat window
+     */
+    function showChatWindow() {
+        var chatButton = $(chatButtonSelector);
+
+        document.getElementById(flyoutContainerIdSelector).style.display = 'block';
+
+        if (chatButton) {
+            chatButton.trigger('click', { IsFakeClick: true });
+        }
+
+        sendParentSizeMessageInMobileCanvasOnly();
+    }
+
+    /**
+     * Update height and width of the containers
+     * @param {string} container Selector of the element to update
+     * @param {Object} data height and width to set the container to
+     */
+    function updateFlyoutContainerStyle(container, data) {
+        $(container).css('height', '{0}'.replace('{0}', data.height));
+        $(container).css('max-width', '{0}'.replace('{0}', data.width));
+        $('.lp-iframe-window').css('height', '{0}'.replace('{0}', data.height));
+        $('.lp-iframe-window').css('width', '{0}'.replace('{0}', data.width));
+    }
+
+    /**
+     * Hide the flyout container
+     */
+    function closeSandBoxFlyout() {
+        var closeFlyout = $('.lp-iframe-close');
+        closeFlyout.click();
+        if (!flyoutContainer) {
+            flyoutContainer = document.getElementById(flyoutContainerIdSelector);
+        }
+        flyoutContainer.setAttribute(ariaHiddenAttrName, 'true');
+    }
+})(window);
