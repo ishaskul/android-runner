@@ -37,6 +37,7 @@ This replication package is structured as follows:
 all of the folders above will be classified to different packages and explained below:
 
 ### Experiment Execution package
+---
 This section contains the configuration json and python script used by android runner to utilize batterystats plugin and perfumeJS plguin.
 
 ```
