@@ -55,7 +55,7 @@ python3 android-runner path_to/our_config.json
 ```
 To start the nodeJS server, run:
 ```bash
-cd nodejs server
+cd "nodejs server"
 ```
 then
 ```bash
@@ -63,7 +63,7 @@ node webapps.js
 ```
 To access all of the hosted web apps name, run:
 ```bash
-cd nodejs server/web-apps
+cd "nodejs server"/web-apps
 ```
 After the server starts, the web apps is accessible by the url below
 
