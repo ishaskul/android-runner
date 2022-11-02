@@ -97,9 +97,8 @@ For batterystats, the file name structure below follows the following naming con
 **Perfumejs output raw data:** /perfumejs/raw-data-output\
 For perfumejs rawdata output, the file name structure below follows the following naming conventions: browser types are: chrome, firefox, opera, Different performance metrics are : cls, fid, fcp, Browser privacy protection levels are: no-protect, std(standard), strict.
 
-
 **Perfumejs merged output data:** /perfumejs/merged-data-output\
-Merged output data refers to the csvs created after merging all the metrics raw data based on browser type and the respective privacy preserving setting. For example, for Chrome browser with no privacy preserving protection, we merged all the raw data contained in following CSV files - chrome-fid-no-protect-metrics.csv, chrome-lcp-no-protect-metrics.csv, chrome-cls-no-protect-metrics.csv into a single file.\\
+Merged output data refers to the csvs created after merging all the metrics raw data based on browser type and the respective privacy preserving setting. For example, for Chrome browser with no privacy preserving protection, we merged all the raw data contained in following CSV files - chrome-fid-no-protect-metrics.csv, chrome-lcp-no-protect-metrics.csv, chrome-cls-no-protect-metrics.csv into a single file.
 
 For merged data output, the file name structure below follows the following naming conventions: browser types are: chrome, firefox, opera, Browser privacy protection levels are: no-protect, std(standard), strict.
 ```
