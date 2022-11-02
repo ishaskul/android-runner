@@ -1,0 +1,64 @@
+{
+  "type": "web",
+  "devices": {
+    "xiaomi6": {}
+  },
+  "repetitions": 1,
+  "duration": 60000,
+  "browsers": ["firefox"],
+  "systrace_path": "/lib/android-sdk/platform-tools/systrace/systrace.py",
+  "powerprofile_path": "android-runner/examples/batterystats/Scripts/power_profile.xml", 
+  "paths": [
+"https://www.google.com",
+"https://www.wordpress.org",
+"https://www.youtube.com",
+"https://www.facebook.com",
+"https://www.microsoft.com",
+"https://www.bing.com",
+"https://www.netflix.com",
+"https://www.twitter.com",
+"https://www.instagram.com",
+"https://www.amazonaws.com",
+"https://www.baidu.com",
+"https://www.apple.com",
+"https://www.linkedin.com",
+"https://www.cloudflare.com",
+"https://www.wikipedia.org",
+"https://www.office.com",
+"https://www.yahoo.com",
+"https://www.pinterest.com",
+"https://www.qq.com",
+"https://www.amazon.com",
+"https://www.live.com",
+"https://www.bilibili.com",
+"https://www.azure.com",
+"https://www.reddit.com",
+"https://www.github.com",
+"https://www.vimeo.com",
+"https://www.fastly.com"
+  ],
+  "profilers": {
+    "batterystats": {
+      "cleanup": true,
+      "enable_systrace_parsing": false,
+      "python2_path": "/home/pi/.pyenv/versions/systrace/bin/python2.7"
+    }
+  },
+  "scripts": {
+    "before_experiment": "Scripts/before_experiment.py",
+    "before_run": "Scripts/before_run.py",
+    "after_launch": "Scripts/after_launch.py",
+    "interaction": [
+      {
+        "type": "python3",
+        "path": "Scripts/interaction.py",
+        "timeout": 500,
+        "logcat_regex": "some keyword"
+      }
+    ],
+    "before_close": "Scripts/before_close.py",
+    "after_run": "Scripts/after_run.py",
+    "after_experiment": "Scripts/after_experiment.py"
+  },
+  "time_between_run": 1200000
+}

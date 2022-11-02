@@ -1,6 +1,106 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=S2-group_android-runner&metric=alert_status)](https://sonarcloud.io/dashboard?id=S2-group_android-runner)
 [![Build Status](https://travis-ci.org/S2-group/android-runner.svg?branch=master)](https://travis-ci.org/S2-group/android-runner)
 [![Coverage Status](https://coveralls.io/repos/github/S2-group/android-runner/badge.svg?branch=master)](https://coveralls.io/github/S2-group/android-runner?branch=master&service=github)
+# Green Lab 2022 – Replication package of Team Green Cubs
+
+This repository contains the replication package and dataset of the Team Project **Impact of Privacy Settings on Performance and Energy Consumption of Web Apps on Android devices** in Green Lab 2022 at VU Amsterdam.
+
+This study has been designed, developed, and reported by the following students:
+
+- [Tong Wu]()(t3.wu@student.vu.nl)
+- [Ishas Kulkarni]() (i.d.kulkarni@student.vu.nl)
+- [Yue Guo]() (y4.guo@student.vu.nl)
+- [Rui Pan]()(r.pan@student.vu.nl)
+- [Yunshan Wang]()(y47.wang@student.vu.nl)
+
+For any information, interested researchers can contact us by sending an email to any of the students listed above.
+The full dataset including raw experiment data, interaction scripts, and data analysis scripts produced during the experiment are available below.
+
+### Overview of the replication package
+---
+
+This replication package is structured as follows:
+
+```
+    /
+    .
+    |--- batterystats/       	The confifuration files for each type of browser.
+    |--- batterystats/Scripts/  The python scripts for interacting with the web apps.
+    |--- batterystats/output/   The raw data in CSV output for each experiment
+    |--- perfumejs/             The configuration files for each type of browser.
+    |--- perfumejs/Scripts      The python scripts for interacting with the static webapps hosted on the nodejs webserver.
+    |--- perfumejs/output       The raw data output in CSV format for each performance metrics 
+    |--- nodejs server/   	The server which hosts the web apps from the Tranco List
+    |--- data analysis/         The R script for data analysis
+```
+
+all of the folders above will be classified to different packages and explained below:
+
+### Experiment Execution package
+This section contains the configuration json and python script used by android runner to utilize batterystats plugin and perfumeJS plguin.
+
+```
+    /
+    .
+    |--- batterystats/       	The confifuration files for each type of browser.
+    |--- batterystats/Scripts/  The python scripts for interacting with the web apps.
+    |--- perfumejs/             The configuration files for each type of browser.
+    |--- perfumejs/Scripts      The python scripts for interacting with the static webapps hosted on the nodejs webserver.
+    |--- nodejs server/   	The server which hosts the web apps from the Tranco List
+```
+To run an experiment, run:
+```bash
+python3 android-runner path_to/our_config.json
+```
+To start the nodeJS server, run:
+```bash
+cd nodejs server
+```
+then
+```bash
+node webapps.js
+```
+
+### Data analysis package
+---
+This section contains the R script used to generate plots for our experiment
+```
+data_analysis
+    .   
+    |--- analysis.r                             The R script we used for generating the plots reported in the article
+    |--- documentation_fragments.csv            Raw textual fragments extracted from the documentation of ROS-based systems, with full traceability information about which guideline it generates and the specific repository it is coming from
+    |--- guidelines_definitions.csv             Raw data containing the guidelines defined during the analysis for answering RQ2 with additional data about how we solved conflicts, their computed usefulness, etc.
+```
+
+### Dataset
+This section contains the CSV raw data resulted from our experiment
+---
+The file below follows the same naming conventions: browser types are: chrome, firefox, opera, privacy protect levels are: no-protect, std(standard), strict
+```
+    /
+    .
+    |--- batterystats/output/chrome_no_protect_Aggregated_Results_Batterystats.csv
+    |--- batterystats/output/chrome_std_Aggregated_Results_Batterystats.csv   
+    |--- batterystats/output/chrome_strict_Aggregated_Results_Batterystats.csv   
+    |--- batterystats/output/firefox_no_protection_Aggregated_Results_Batterystats.csv 
+    |--- batterystats/output/firefox_std_Aggregated_Results_Batterystats.csv  
+    |--- batterystats/output/firefox_strict_Aggregated_Results_Batterystats.csv  
+    |--- batterystats/output/opera_no_protect_Aggregated_Results_Batterystats.csv
+    |--- batterystats/output/opera_std_Aggregated_Results_Batterystats.csv  
+    |--- batterystats/output/opera_strict_Aggregated_Results_Batterystats.csv 
+    |--- perfumejs/output/chrome-no-protect-metrics.csv
+    |--- perfumejs/output/chrome-std-metrics.csv
+    |--- perfumejs/output/chrome-strict-metrics.csv
+    |--- perfumejs/output/firefox-no-protect.csv
+    |--- perfumejs/output/firefox-std-metrics.csv
+    |--- perfumejs/output/firefox-strict-metrics.csv
+    |--- perfumejs/output/opera-no-protect-metrics.csv
+    |--- perfumejs/output/opera-std-metrics.csv
+    |--- perfumejs/output/opera-strict-metrics.csv
+    
+```
+
+
 # Android Runner
 Android Runner (AR) is a tool for automatically executing measurement-based experiments on native and web apps running on Android devices.
 

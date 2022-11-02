@@ -111,4 +111,3 @@ AndroidRunner/Plugins/monsoon/script/monsoon_config.csv
 !com.quicinc.trepn.apk
 
 # ignore any ouputs of experiments
-output/
