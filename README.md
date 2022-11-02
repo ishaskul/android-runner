@@ -90,7 +90,6 @@ data analysis
 ### Dataset
 ---
 This section contains the CSV raw data resulted from our experiment
-```
 
 **Batterystats output:** /batterystats/output\
 For batterystats, the file name structure below follows the following naming conventions: browser types are: chrome, firefox, opera, privacy protect levels are: no-protect, std(standard), strict
