@@ -61,6 +61,21 @@ then
 ```bash
 node webapps.js
 ```
+To access all of the hosted web apps name, run:
+```bash
+cd nodejs server/web-apps
+```
+After the server starts, the web apps is accessible by the url below
+
+```bash
+http://192.168.0.103:9001/web_app_name/web_app_name.html
+```
+
+Consider the Google web app hosted in our nodeJS server as an example, you can access by the link below
+
+```bash
+http://192.168.0.103:9001/Google/Google.html
+```
 
 ### Data analysis package
 ---
