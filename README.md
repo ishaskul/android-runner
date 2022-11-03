@@ -24,10 +24,10 @@ This replication package is structured as follows:
 ```
     /
     .
-    |--- batterystats/       	The confifuration files for each type of browser.
+    |--- batterystats/       	The configuration files for each type of browser.(config.json)
     |--- batterystats/Scripts/  The python scripts for interacting with the web apps.
     |--- batterystats/output/   The raw data in CSV output for each experiment
-    |--- perfumejs/             The configuration files for each type of browser.
+    |--- perfumejs/             The configuration files for each type of browser.(config.json)
     |--- perfumejs/Scripts      The python scripts for interacting with the static webapps hosted on the nodejs webserver.
     |--- perfumejs/output       The raw data output in CSV format for each performance metrics 
     |--- nodejs server/   	The server which hosts the web apps from the Tranco List
@@ -37,6 +37,7 @@ This replication package is structured as follows:
 all of the folders above will be classified to different packages and explained below:
 
 ### Experiment Execution package
+---
 This section contains the configuration json and python script used by android runner to utilize batterystats plugin and perfumeJS plguin.
 
 ```
@@ -54,28 +55,52 @@ python3 android-runner path_to/our_config.json
 ```
 To start the nodeJS server, run:
 ```bash
-cd nodejs server
+cd "nodejs server"
 ```
 then
 ```bash
 node webapps.js
+```
+To access all of the hosted web apps name, run:
+```bash
+cd "nodejs server"/web-apps
+```
+After the server starts, the web apps is accessible by the url below
+
+```bash
+http://192.168.0.103:9001/web_app_name/web_app_name.html
+```
+
+Consider the Google web app hosted in our nodeJS server as an example, you can access by the link below
+
+```bash
+http://192.168.0.103:9001/Google/Google.html
 ```
 
 ### Data analysis package
 ---
 This section contains the R script used to generate plots for our experiment
 ```
-data_analysis
+data analysis
     .   
-    |--- analysis.r                             The R script we used for generating the plots reported in the article
-    |--- documentation_fragments.csv            Raw textual fragments extracted from the documentation of ROS-based systems, with full traceability information about which guideline it generates and the specific repository it is coming from
-    |--- guidelines_definitions.csv             Raw data containing the guidelines defined during the analysis for answering RQ2 with additional data about how we solved conflicts, their computed usefulness, etc.
+    |--- data_analysis.r           The R script we used for generating the plots reported in the article.
+    |--- final_data.csv            This is the final dataset generated.
 ```
 
 ### Dataset
-This section contains the CSV raw data resulted from our experiment
 ---
-The file below follows the same naming conventions: browser types are: chrome, firefox, opera, privacy protect levels are: no-protect, std(standard), strict
+This section contains the CSV raw data resulted from our experiment
+
+**Batterystats output:** /batterystats/output\
+For batterystats, the file name structure below follows the following naming conventions: browser types are: chrome, firefox, opera, privacy protect levels are: no-protect, std(standard), strict
+
+**Perfumejs output raw data:** /perfumejs/raw-data-output\
+For perfumejs rawdata output, the file name structure below follows the following naming conventions: browser types are: chrome, firefox, opera, Different performance metrics are : cls, fid, fcp, Browser privacy protection levels are: no-protect, std(standard), strict.
+
+**Perfumejs merged output data:** /perfumejs/merged-data-output\
+Merged output data refers to the csvs created after merging all the metrics raw data based on browser type and the respective privacy preserving setting. For example, for Chrome browser with no privacy preserving protection, we merged all the raw data contained in following CSV files - chrome-fid-no-protect-metrics.csv, chrome-lcp-no-protect-metrics.csv, chrome-cls-no-protect-metrics.csv into a single file.
+
+For merged data output, the file name structure below follows the following naming conventions: browser types are: chrome, firefox, opera, Browser privacy protection levels are: no-protect, std(standard), strict.
 ```
     /
     .
@@ -88,15 +113,42 @@ The file below follows the same naming conventions: browser types are: chrome, f
     |--- batterystats/output/opera_no_protect_Aggregated_Results_Batterystats.csv
     |--- batterystats/output/opera_std_Aggregated_Results_Batterystats.csv  
     |--- batterystats/output/opera_strict_Aggregated_Results_Batterystats.csv 
-    |--- perfumejs/output/chrome-no-protect-metrics.csv
-    |--- perfumejs/output/chrome-std-metrics.csv
-    |--- perfumejs/output/chrome-strict-metrics.csv
-    |--- perfumejs/output/firefox-no-protect.csv
-    |--- perfumejs/output/firefox-std-metrics.csv
-    |--- perfumejs/output/firefox-strict-metrics.csv
-    |--- perfumejs/output/opera-no-protect-metrics.csv
-    |--- perfumejs/output/opera-std-metrics.csv
-    |--- perfumejs/output/opera-strict-metrics.csv
+    |--- perfumejs/raw-data-output/chrome-cls-no-protect-metrics.csv
+    |--- perfumejs/raw-data-output/chrome-cls-std-metrics.csv
+    |--- perfumejs/raw-data-output/chrome-cls-strict-metrics.csv
+    |--- perfumejs/raw-data-output/chrome-fid-no-protect-metrics.csv
+    |--- perfumejs/raw-data-output/chrome-fid-std-metrics.csv
+    |--- perfumejs/raw-data-output/chrome-fid-strict-metrics.csv
+    |--- perfumejs/raw-data-output/chrome-lcp-no-protect-metrics.csv
+    |--- perfumejs/raw-data-output/chrome-lcp-std-metrics.csv
+    |--- perfumejs/raw-data-output/chrome-lcp-strict-metrics.csv
+    |--- perfumejs/raw-data-output/firefox-cls-no-protect-metrics.csv
+    |--- perfumejs/raw-data-output/firefox-cls-std-metrics.csv
+    |--- perfumejs/raw-data-output/firefox-cls-strict-metrics.csv
+    |--- perfumejs/raw-data-output/firefox-fid-no-protect-metrics.csv
+    |--- perfumejs/raw-data-output/firefox-fid-std-metrics.csv
+    |--- perfumejs/raw-data-output/firefox-fid-strict-metrics.csv
+    |--- perfumejs/raw-data-output/firefox-lcp-no-protect-metrics.csv
+    |--- perfumejs/raw-data-output/firefox-lcp-std-metrics.csv
+    |--- perfumejs/raw-data-output/firefox-lcp-strict-metrics.csv
+    |--- perfumejs/raw-data-output/opera-cls-no-protect-metrics.csv
+    |--- perfumejs/raw-data-output/opera-cls-std-metrics.csv
+    |--- perfumejs/raw-data-output/opera-cls-strict-metrics.csv
+    |--- perfumejs/raw-data-output/opera-fid-no-protect-metrics.csv
+    |--- perfumejs/raw-data-output/opera-fid-std-metrics.csv
+    |--- perfumejs/raw-data-output/opera-fid-strict-metrics.csv
+    |--- perfumejs/raw-data-output/opera-lcp-no-protect-metrics.csv
+    |--- perfumejs/raw-data-output/opera-lcp-std-metrics.csv
+    |--- perfumejs/raw-data-output/opera-lcp-strict-metrics.csv
+    |--- perfumejs/merged-data-output/chrome-no-protect-metrics.csv
+    |--- perfumejs/merged-data-output/chrome-std-metrics.csv
+    |--- perfumejs/merged-data-output/chrome-strict-metrics.csv
+    |--- perfumejs/merged-data-output/firefox-no-protect.csv
+    |--- perfumejs/merged-data-output/firefox-std-metrics.csv
+    |--- perfumejs/merged-data-output/firefox-strict-metrics.csv
+    |--- perfumejs/merged-data-output/opera-no-protect-metrics.csv
+    |--- perfumejs/merged-data-output/opera-std-metrics.csv
+    |--- perfumejs/merged-data-output/opera-strict-metrics.csv
     
 ```
 
