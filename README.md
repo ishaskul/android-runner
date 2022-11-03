@@ -24,10 +24,10 @@ This replication package is structured as follows:
 ```
     /
     .
-    |--- batterystats/       	The confifuration files for each type of browser.
+    |--- batterystats/       	The configuration files for each type of browser.(config.json)
     |--- batterystats/Scripts/  The python scripts for interacting with the web apps.
     |--- batterystats/output/   The raw data in CSV output for each experiment
-    |--- perfumejs/             The configuration files for each type of browser.
+    |--- perfumejs/             The configuration files for each type of browser.(config.json)
     |--- perfumejs/Scripts      The python scripts for interacting with the static webapps hosted on the nodejs webserver.
     |--- perfumejs/output       The raw data output in CSV format for each performance metrics 
     |--- nodejs server/   	The server which hosts the web apps from the Tranco List
